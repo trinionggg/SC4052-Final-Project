@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CoachBot — LoL AI Coaching</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Header ── -->
+  <header>
+    <div class="wrap header-inner">
+      <div class="logo">Coach<span>Bot</span></div>
+      <!-- <div class="header-status">
+        <div class="status-dot"></div>
+        AI Online
+      </div> -->
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <!-- ── Hero ── -->
+    <div class="hero">
+      <div class="hero-label">League of Legends · AI Analysis</div>
+      <h1>Play smarter.<br/><em>Climb faster.</em></h1>
+      <p>Enter any summoner name and get an instant AI coaching report with personalized performance breakdowns.</p>
+    </div>
+
+    <!-- ── API Keys ── -->
+    <div class="keys-card">
+      <div class="keys-label">API Configuration</div>
+      <div class="keys-row">
+        <div>
+          <label class="field-label">Riot API Key</label>
+          <input type="password" id="riot-key" placeholder="RGAPI-xxxxxxxx-xxxx-…"/>
+        </div>
+        <div>
+          <label class="field-label">OpenAI API Key</label>
+          <input type="password" id="openai-key" placeholder="sk-…"/>
+        </div>
+      </div>
+      <span class="field-hint">Keys go directly to your backend and are never stored. Get a Riot key at <a href="https://developer.riotgames.com" target="_blank">developer.riotgames.com</a></span>
+    </div>
+
+    <!-- ── Tabs ── -->
+    <div class="tabs-wrap">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('individual')">Individual Analysis</button>
+        <button class="tab-btn" onclick="switchTab('match')">Match · Team Analysis</button>
+      </div>
+    </div>
+
+    <!-- ════ TAB: INDIVIDUAL ════ -->
+    <div class="tab-panel active" id="tab-individual">
+      <div class="lookup-card">
+        <div class="lookup-label">Player Lookup</div>
+        <div class="lookup-row">
+          <div>
+            <label class="field-label">Summoner Name</label>
+            <input type="text" id="ind-name" placeholder="e.g. Hide on bush"/>
+          </div>
+          <div>
+            <label class="field-label">Tag</label>
+            <input type="text" id="ind-tag" placeholder="e.g. KR1"/>
+          </div>
+          <div>
+            <label class="field-label">Region</label>
+            <select id="ind-region">
+              <option value="asia">Asia (KR)</option>
+              <option value="americas">Americas (NA)</option>
+              <option value="europe">Europe (EUW)</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">&nbsp;</label>
+            <button class="btn" onclick="analyzeIndividual()">Analyze</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="loader" id="ind-loader">
+        <div class="spinner"></div>
+        <div class="loader-msg">Fetching match data…</div>
+      </div>
+      <div class="error-box" id="ind-error"></div>
+
+      <div id="ind-result" class="hidden">
+        <div class="result-card">
+          <div class="result-header" id="ind-header"></div>
+          <div class="stats-grid" id="ind-stats"></div>
+        </div>
+        <div class="result-card">
+          <div class="section-label">Coaching Report</div>
+          <div class="report-split">
+            <div class="report-text" id="ind-report"></div>
+            <div class="chart-wrap">
+              <div class="chart-label">Performance Radar</div>
+              <canvas id="ind-radar"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ TAB: MATCH ════ -->
+    <div class="tab-panel" id="tab-match">
+      <div class="lookup-card">
+        <div class="lookup-label">Match Lookup — enter any player in the game</div>
+        <div class="lookup-row">
+          <div>
+            <label class="field-label">Summoner Name</label>
+            <input type="text" id="match-name" placeholder="e.g. Hide on bush"/>
+          </div>
+          <div>
+            <label class="field-label">Tag</label>
+            <input type="text" id="match-tag" placeholder="e.g. KR1"/>
+          </div>
+          <div>
+            <label class="field-label">Region</label>
+            <select id="match-region">
+              <option value="asia">Asia (KR)</option>
+              <option value="americas">Americas (NA)</option>
+              <option value="europe">Europe (EUW)</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">&nbsp;</label>
+            <button class="btn" onclick="analyzeMatch()">Analyze</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="loader" id="match-loader">
+        <div class="spinner"></div>
+        <div class="loader-msg">Analyzing all 10 players…</div>
+      </div>
+      <div class="error-box" id="match-error"></div>
+
+      <div id="match-result" class="hidden">
+        <div class="result-card">
+          <div class="section-label" id="match-meta"></div>
+          <div class="scoreboard-grid" id="scoreboard"></div>
+        </div>
+        <div class="result-card">
+          <div class="section-label">Match Visuals</div>
+          <div class="charts-area">
+            <div class="chart-wrap">
+              <div class="chart-label">Damage dealt to champions</div>
+              <canvas id="damage-chart" height="160"></canvas>
+            </div>
+            <div class="charts-2col">
+              <div class="chart-wrap">
+                <div class="chart-label">CS per minute by role</div>
+                <canvas id="cs-chart"></canvas>
+              </div>
+              <div class="chart-wrap">
+                <div class="chart-label">Vision score by role</div>
+                <canvas id="vision-chart"></canvas>
+              </div>
+              <div class="chart-wrap">
+                <div class="chart-label">MVP Radar — top KDA per team</div>
+                <canvas id="mvp-radar"></canvas>
+              </div>
+              <div class="chart-wrap">
+                <div class="chart-label">Gold share</div>
+                <canvas id="gold-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="result-card">
+          <div class="section-label">AI Team Reports</div>
+          <div class="ai-split">
+            <div class="ai-team-block">
+              <span class="ai-team-tag ai-tag-blue">Blue Team</span>
+              <div class="report-text" id="blue-report"></div>
+            </div>
+            <div class="ai-team-block">
+              <span class="ai-team-tag ai-tag-red">Red Team</span>
+              <div class="report-text" id="red-report"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:4rem"></div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/individual.js"></script>
+<script src="js/match.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

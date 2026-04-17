@@ -1,0 +1,10 @@
+streamlit
+requests
+openai
+plotly
+fastapi
+uvicorn
+python-dotenv
+ 
+# uvicorn main:app --reload
+# python -m http.server 3000

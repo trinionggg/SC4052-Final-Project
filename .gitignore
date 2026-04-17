@@ -1,0 +1,9 @@
+venv/
+env/
+.venv/
+__pycache__/
+*.pyc
+.env
+research_dataset.json
+.DS_Store
+Thumbs.db
