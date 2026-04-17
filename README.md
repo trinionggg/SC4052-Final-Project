@@ -1,4 +1,4 @@
-# SC4052 Project2
+# SC4052 Project
 
 # AI Coaching for League of Legends
 
