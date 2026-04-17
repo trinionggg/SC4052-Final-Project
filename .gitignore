@@ -7,3 +7,4 @@ __pycache__/
 research_dataset.json
 .DS_Store
 Thumbs.db
+research.db
