@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Header
 from typing import Optional
-from config import ENV_RIOT_KEY, ENV_OPENAI_KEY
-from models import PlayerRequest
-from riot import get_puuid, get_recent_match_id, get_match_data, extract_stats
-from grading import grade_player
-from ai import ai_coaching_report
+from backend.config import ENV_RIOT_KEY, ENV_OPENAI_KEY
+from backend.models import PlayerRequest
+from backend.riot import get_puuid, get_recent_match_id, get_match_data, extract_stats
+from backend.grading import grade_player
+from backend.ai import ai_coaching_report
 from fastapi import HTTPException
+from ml.predict import predict
 
 router = APIRouter()
 
@@ -27,9 +28,54 @@ def analyze_individual(
     match_data = get_match_data(match_id, req.region, riot_key)
     duration   = round(match_data["info"]["gameDuration"] / 60, 1)
     raw_player = next(p for p in match_data["info"]["participants"] if p["puuid"] == puuid)
-    stats      = extract_stats(raw_player, duration)
-    stats["grade"]           = grade_player(stats)
-    stats["duration"]        = duration
-    stats["match_id"]        = match_id
+    print("here")
+    stats = extract_stats(raw_player, duration)
+    print("Extracted stats:", stats)
+
+    # predict from ml model
+    prediction = predict(stats)
+    stats["win_probability"] = prediction["win_probability"]
+    stats["performance_label"] = prediction["performance_label"]
+    stats["grade"] = prediction["grade"]
+    stats["top_positive"] = prediction["top_positive"]
+    stats["top_negative"] = prediction["top_negative"]
+
+    # stats["grade"]           = grade_player(stats, win_probability)
+
+    stats["duration"] = duration
+    stats["match_id"] = match_id
+
+    print("Stats used for ai coaching report:", stats)
     stats["coaching_report"] = ai_coaching_report(stats, openai_key)
-    return {"status": "ok", "data": stats}
+    print("Generated coaching report:", stats["coaching_report"])
+    return {"status": "ok", 
+            "data": {
+                    # identity
+                    "name":         stats["name"],
+                    "champion":     stats["champion"],
+                    "role":         stats["role"],
+                    "win":          stats["win"],
+                    "match_id":     stats.get("match_id", "N/A"),
+                    "duration":     stats["duration"],  # convert to minutes
+
+                    # stats — named exactly as frontend expects
+                    "kills":        stats["kills"],
+                    "deaths":       stats["deaths"],
+                    "assists":      stats["assists"],
+                    "kda":          stats["kda"],
+                    "cs_per_min":   stats["cs_per_min"],
+                    "vision_score": stats["visionscore"],        # rename here
+                    "damage_dealt": stats["damage_dealt"],
+                    "wards_placed": stats["wards_placed"],
+
+                    # model output
+                    "grade":             prediction["grade"],
+                    "win_probability":   prediction["win_probability"],
+                    "performance_label": prediction["performance_label"],
+                    "top_positive":      prediction["top_positive"],
+                    "top_negative":      prediction["top_negative"],
+
+                    # llm report
+                    "coaching_report": stats["coaching_report"],
+                }
+            }

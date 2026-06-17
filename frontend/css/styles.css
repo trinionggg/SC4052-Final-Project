@@ -398,6 +398,57 @@ canvas { width: 100% !important; }
 .ai-tag-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(11,196,227,0.25); }
 .ai-tag-red  { background: var(--red-dim);  color: var(--red);  border: 1px solid rgba(232,64,87,0.25); }
 
+
+.report-summary {
+  color: #aab;
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+.report-section { margin-bottom: 1.2rem; }
+.report-section-title {
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #778;
+  margin-bottom: .6rem;
+}
+.report-item {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  padding: .6rem .8rem;
+  border-radius: 6px;
+  margin-bottom: .4rem;
+}
+.report-item-positive { background: rgba(76,175,80,.08);  border-left: 3px solid #4caf50; }
+.report-item-negative { background: rgba(232,64,87,.08);   border-left: 3px solid #e84057; }
+.report-item-stat     { font-size: .75rem; font-weight: 600; color: #c89b3c; min-width: 130px; }
+.report-item-text     { font-size: .85rem; color: #ccd; line-height: 1.5; }
+.report-drill {
+  background: rgba(11,196,227,.08);
+  border-left: 3px solid #0bc4e3;
+  padding: .75rem 1rem;
+  border-radius: 6px;
+  font-size: .875rem;
+  line-height: 1.6;
+  color: #ccd;
+}
+.insight-label-row    { margin-bottom: .75rem; }
+.insight-assessment   { font-size: .85rem; color: #c89b3c; font-weight: 500; }
+.insight-row          { display: flex; align-items: center; gap: 1rem; margin-bottom: .75rem; }
+.insight-label        { font-size: .75rem; color: #778; min-width: 110px; }
+.insight-bar-wrap     { flex: 1; height: 6px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; }
+.insight-bar          { height: 100%; background: linear-gradient(90deg,#0bc4e3,#c89b3c); border-radius: 99px; transition: width .6s ease; }
+.insight-val          { font-size: .85rem; font-weight: 600; color: #c89b3c; min-width: 36px; }
+.shap-row             { display: flex; gap: 1rem; margin-top: .75rem; }
+.shap-col             { flex: 1; }
+.shap-title           { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: #778; margin-bottom: .4rem; }
+.shap-item            { display: flex; justify-content: space-between; padding: .35rem .6rem; border-radius: 4px; font-size: .8rem; margin-bottom: .25rem; }
+.shap-positive        { background: rgba(76,175,80,.08);  color: #4caf50; }
+.shap-negative        { background: rgba(232,64,87,.08);   color: #e84057; }
+
+
 /* ── Utilities ── */
 .hidden { display: none !important; }
 

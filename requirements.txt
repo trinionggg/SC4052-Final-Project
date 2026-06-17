@@ -5,6 +5,14 @@ plotly
 fastapi
 uvicorn
 python-dotenv
+xgboost
+scikit-learn
+pandas
+numpy
+shap
+kagglehub
+joblib
+matplotlib
  
 # uvicorn main:app --reload
 # python -m http.server 3000

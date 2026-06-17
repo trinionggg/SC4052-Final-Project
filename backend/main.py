@@ -1,9 +1,8 @@
-import config
-from config import create_app
-from routes import individual, match
-import storage
+from backend.config import create_app
+from backend.routes import individual, match
+import backend.storage
 
-storage.init_db()  # creates research.db on first run
+backend.storage.init_db()  # creates research.db on first run
 
 app = create_app()
 

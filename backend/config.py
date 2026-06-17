@@ -15,5 +15,6 @@ def create_app() -> FastAPI:
         allow_origins=["*"],
         allow_methods=["*"],
         allow_headers=["*"],
+        allow_credentials=True,
     )
     return app

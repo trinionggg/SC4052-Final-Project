@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Header, HTTPException
 from typing import Optional
-from config import ENV_RIOT_KEY, ENV_OPENAI_KEY
-from models import PlayerRequest
-from riot import get_puuid, get_recent_match_id, get_match_data, extract_stats
-from grading import grade_player
-from ai import ai_team_report
-import storage
+from backend.config import ENV_RIOT_KEY, ENV_OPENAI_KEY
+from backend.models import PlayerRequest
+from backend.riot import get_puuid, get_recent_match_id, get_match_data, extract_stats
+from backend.grading import grade_player
+from backend.ai import ai_team_report
+import backend.storage
 
 router = APIRouter()
 
@@ -38,7 +38,7 @@ def analyze_match(
         for p in all_stats
     ]
 
-    storage.save_match(match_id, duration, research_entries)  
+    backend.storage.save_match(match_id, duration, research_entries)  
     
     return {
         "status":           "ok",
